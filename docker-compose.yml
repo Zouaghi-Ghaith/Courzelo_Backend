@@ -5,30 +5,43 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=Corzello
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: corzello
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - db:/var/lib/mysql
-  app-timesheet:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      mynetwork:
+        ipv4_address: 172.18.0.2  # Specify the desired fixed IP address
+  app:
     depends_on:
       - mysqldb
-    image: ghaithzouaghi/corzello:1.0.0
-    #build : ./
+    build: ./
+    ## image: islemamor01/intership:latest
     restart: on-failure
     ports:
-      - 8089:8089
-    environment:
-      SPRING_APPLICATION_JSON: '{
-        "spring.datasource.url"  : "jdbc:mysql://mysqldb:3306/Corzello?createDatabaseIfNotExist=true",
-        "spring.datasource.username" : "root",
-        "spring.datasource.password" : "root",
-        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL5InnoDBDialect",
-        "spring.jpa.hibernate.ddl-auto" : "update"
-      }'
+      - "8089:8089"
+    volumes:
+      - .m2:/root/.m2
+
     stdin_open: true
     tty: true
+    networks:
+      mynetwork:
+        ipv4_address: 172.18.0.3  # Specify a different fixed IP address
 
 volumes:
-  db :
+  db:
+networks:
+  mynetwork:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
