@@ -1,4 +1,4 @@
-version: "3.8"
+## version: "3.8"
 
 services:
   mysqldb:
@@ -22,8 +22,8 @@ services:
   app:
     depends_on:
       - mysqldb
-    build: ./
-    ## image: ghaithzouaghi/corzello:latest
+    ## build: ./
+    image: ghaithzouaghi/corzello:latest
     restart: on-failure
     ports:
       - "8089:8089"
