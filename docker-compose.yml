@@ -18,12 +18,11 @@ services:
       retries: 5
     networks:
       mynetwork:
-        ipv4_address: 172.19.0.2  # Updated fixed IP address
+        ipv4_address: 172.19.0.2  # Fixed IP address for MySQL
 
   app:
     depends_on:
       - mysqldb
-    ## build: ./
     image: ghaithzouaghi/corzello:latest
     restart: on-failure
     ports:
@@ -34,7 +33,30 @@ services:
     tty: true
     networks:
       mynetwork:
-        ipv4_address: 172.19.0.3  # Updated fixed IP address
+        ipv4_address: 172.19.0.3  # Fixed IP address for the backend app
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount your Prometheus config
+    ports:
+      - "9090:9090"
+    networks:
+      mynetwork:
+        ipv4_address: 172.19.0.4  # Fixed IP address for Prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    networks:
+      mynetwork:
+        ipv4_address: 172.19.0.5  # Fixed IP address for Grafana
 
 volumes:
   db:
@@ -45,4 +67,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.19.0.0/16  # Changed subnet to avoid overlap
+        - subnet: 172.19.0.0/16  # Updated subnet to avoid overlap
