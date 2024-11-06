@@ -40,7 +40,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount your Prometheus config
     ports:
-      - "9091:9090"
+      - "9090:9090"
     networks:
       mynetwork:
         ipv4_address: 172.19.0.4  # Fixed IP address for Prometheus

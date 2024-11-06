@@ -1,6 +1,5 @@
 package com.example.corzello.Controller;
 
-import com.example.corzello.Entity.ModuleEntity;
 import com.example.corzello.Entity.Quiz;
 import com.example.corzello.Service.QuizService;
 import lombok.RequiredArgsConstructor;
